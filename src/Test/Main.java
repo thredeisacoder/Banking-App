@@ -1,9 +1,10 @@
 package Test;
 
-import Views.LoginPage;
+import Controllers.AppController;
+
 
 public class Main {
     public static void main(String[] args) {
-        new LoginPage();
+        new AppController();
     }
 }

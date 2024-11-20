@@ -1,24 +1,38 @@
 package Views;
 
-import javax.swing.*;
+import java.awt.EventQueue;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.BorderLayout;
+import java.awt.Font;
 
 public class HomePage extends JFrame {
-    private JButton logoutBtn;
-    public HomePage() {
-        super();
-        logoutBtn = new JButton("Logout");
-        JLabel lb=new JLabel("Home page");
-        JPanel panel = new JPanel();
 
-        panel.add(lb);
-        panel.add(logoutBtn);
-        add(panel);
-        logoutBtn.addActionListener(event->{
-            setVisible(false);
-        });
-    }
-    public void init(){
+	private JPanel contentPanel;
+	private JButton logoutBtn;
 
-    }
+	public HomePage() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLayout(new BorderLayout());
+		contentPanel = new JPanel();
+		setSize(300, 500);
+		contentPanel.setLayout(new BorderLayout(0, 0));
+		logoutBtn = new JButton("Logout");
+
+		JPanel panel = new JPanel();
+		contentPanel.add(panel, BorderLayout.CENTER);
+		panel.setLayout(new BorderLayout(0, 0));
+
+		JLabel lblNewLabel = new JLabel("Home");
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 45));
+		panel.add(lblNewLabel, BorderLayout.CENTER);
+		add(contentPanel, BorderLayout.CENTER);
+		add(logoutBtn, BorderLayout.SOUTH);
+	}
+
+	public JButton getLogoutBtn() {
+		return logoutBtn;
+	}
+
 }
