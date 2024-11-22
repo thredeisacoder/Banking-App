@@ -8,21 +8,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class User {
-    private String id;
+    private int id;
     private String name;
     private String email;
     private String password;
     private String address;
     private String phone;
-    public User(String id, String name, String email, String password, String address, String phone) {
-        this.id = id;
+    public User(int id, String name, String email, String password, String address, String phone) {
+        if(id!=-1) this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.address = address;
         this.phone = phone;
     }
-    public String getId() {
+    public int getId() {
         return id;
     }
     public String getName() {
@@ -53,7 +53,7 @@ public class User {
         this.phone = phone;
     }
 
-    public static User Login(String phone, String password) {
+    public static User getUser(String phone, String password) {
         try{
             Connection connection = ConnectDatabase.getConnection();
             String query= "select * from users where phone= ? and password= ?";
@@ -61,53 +61,64 @@ public class User {
             preparedStatement.setString(1, phone);
             preparedStatement.setString(2, password);
             ResultSet resultSet =preparedStatement.executeQuery();
-            return User.getUser(resultSet);
+            if (resultSet.next()){
+                int id =0;
+                String name = "";
+                String email = "";
+                String address = "";
+                id = resultSet.getInt("id");
+                name = resultSet.getString("name");
+                email = resultSet.getString("email");
+                password = resultSet.getString("password");
+                address = resultSet.getString("address");
+                phone = resultSet.getString("phone");
+                return new User(id, name, email, password, address, phone);
+           }
+            else return  null;
         }
         catch (Exception e){
             System.out.println(e);
             return null;
         }
     }
-
-    private static User getUser(ResultSet resultSet) {
-        String id = "";
-        String name = "";
-        String email = "";
-        String password = "";
-        String address = "";
-        String phone = "";
+    public static boolean exist(String phone){
         try {
-            if (resultSet.next()){
-                 id = resultSet.getString("id");
-                 name = resultSet.getString("name");
-                 email = resultSet.getString("email");
-                 password = resultSet.getString("password");
-                 address = resultSet.getString("address");
-                 phone = resultSet.getString("phone");
+            Connection connection = ConnectDatabase.getConnection();
+            String query= "select * from users where phone= ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, phone);
+            ResultSet resultSet =preparedStatement.executeQuery();
+            if(resultSet.next()){
+                return true;
             }
-            else return null;
+            else{
+                return false;
+            }
         }
         catch (SQLException e){
             System.out.println(e);
+            return false;
         }
-        return new User(id, name, email, password, address, phone);
+
+
     }
 
-    private static void addUser(User user) {
+    public static boolean addUser(User user) {
         try{
             Connection connection = ConnectDatabase.getConnection();
-            String query= "insert into users(id, name, email, password, address, phone) values(?,?,?,?,?,?)";
+            String query= "insert into users( name, email, password, address, phone) values(?,?,?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, user.getId());
-            preparedStatement.setString(2, user.getName());
-            preparedStatement.setString(3, user.getEmail());
-            preparedStatement.setString(4, user.getPassword());
-            preparedStatement.setString(5, user.getAddress());
-            preparedStatement.setString(6, user.getPhone());
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setString(2, user.getEmail());
+            preparedStatement.setString(3,user.getPassword());
+            preparedStatement.setString(4, user.getAddress());
+            preparedStatement.setString(5,user.getPhone());
             preparedStatement.executeUpdate();
+            return true;
         }
         catch (SQLException e){
             System.out.println(e);
+            return false;
         }
     }
 

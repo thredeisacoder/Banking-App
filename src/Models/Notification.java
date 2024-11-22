@@ -15,26 +15,28 @@ public class Notification {
     private String message;
     private String id;
 
-    public Notification(LocalDate date, String message, String id) {
-        this.date = date;
+    private int user_id;
+
+    public Notification(String message,int user_id) {
+        this.date = LocalDate.now();
         this.message = message;
-        this.id = id;
+        this.user_id=user_id;
     }
 
-    public static List<Notification> getNotificationList(String user_id) {
+    public static List<Notification> getNotificationList(int user_id) {
         List<Notification> notificationList = new ArrayList<>();
         try {
             Connection connection = ConnectDatabase.getConnection();
             String query ="select * from notifications where user_id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, user_id);
+            preparedStatement.setInt(1, user_id);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 LocalDate date = LocalDate.parse(resultSet.getString("date"));
                 String type = resultSet.getString("type");
                 String message = resultSet.getString("message");
                 String id = resultSet.getString("id");
-                notificationList.add(new Notification(date, message, id));
+                notificationList.add(new Notification( message, user_id));
             }
         }
         catch (SQLException e){
