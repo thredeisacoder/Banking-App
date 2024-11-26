@@ -30,7 +30,7 @@ public class LoginPage extends JFrame {
     public void init()  {
         this.setTitle("Login");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setUndecorated(true);
+//        this.setUndecorated(true);
         JPanel titleBar = new JPanel();
         titleBar.setLayout(new BorderLayout());
         titleBar.setBackground(Color.WHITE);

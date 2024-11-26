@@ -28,10 +28,10 @@ public class HomePage extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
 
-		this.setUndecorated(true);
+//		this.setUndecorated(true);
 
 		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new GridLayout(3,1));
+		mainPanel.setLayout(new BorderLayout());
 
 
 		JPanel contentPanel = new JPanel();
@@ -42,7 +42,7 @@ public class HomePage extends JFrame {
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 		logoutBtn = new JButton();
 		logoutBtn.setBackground(new Color(122, 122, 229));
-		logoutBtn.setToolTipText("logout");
+		logoutBtn.setToolTipText("Logout");
 
 		try {
             BufferedImage myPicture = ImageIO.read(new File("./src/Resourses/img/logout.png"));
@@ -55,7 +55,7 @@ public class HomePage extends JFrame {
         }
 		notificationBtn= new JButton();
 		notificationBtn.setBackground(new Color(122,122,229));
-		notificationBtn.setToolTipText("see your notification");
+		notificationBtn.setToolTipText("See your notification");
 		try {
             BufferedImage myPicture = ImageIO.read(new File("./src/Resourses/img/notification.png"));
             Image scaledImage=myPicture.getScaledInstance(30,30,Image.SCALE_SMOOTH);
@@ -68,7 +68,7 @@ public class HomePage extends JFrame {
 
 		detailBtn =new JButton();
 		detailBtn.setBackground(new Color(122,122,229));
-		detailBtn.setToolTipText("show your information");
+		detailBtn.setToolTipText("Show your information");
 		try {
             BufferedImage myPicture = ImageIO.read(new File("./src/Resourses/img/profile-user.png"));
             Image scaledImage=myPicture.getScaledInstance(30,30	,Image.SCALE_SMOOTH);
@@ -98,11 +98,11 @@ public class HomePage extends JFrame {
 		balanceLabel.setFont(new Font("Tahoma", Font.BOLD,20));
 
 		JPanel btnPanel=  new JPanel();
-		btnPanel.setLayout(new GridLayout(2,3));
+		btnPanel.setLayout(new BorderLayout());
 		btnPanel.setBorder(BorderFactory.createEmptyBorder());
 		transferBtn = new JButton("Transfer");
 		transferBtn.setBackground(new Color(122,122,229));
-		btnPanel.add(transferBtn);
+		btnPanel.add(transferBtn, BorderLayout.SOUTH);
 		contentPanel.add(nameLabel);
 		contentPanel.add(accNoLabel);
 		contentPanel.add(balanceLabel);
@@ -110,8 +110,8 @@ public class HomePage extends JFrame {
 
 		contentPanel.add(headPanel, BorderLayout.NORTH);
 		add(headPanel, BorderLayout.NORTH);
-		mainPanel.add(contentPanel);
-		mainPanel.add(btnPanel);
+		mainPanel.add(contentPanel, BorderLayout.CENTER);
+		mainPanel.add(btnPanel, BorderLayout.SOUTH);
 		add(mainPanel, BorderLayout.CENTER);
 		setLocationRelativeTo(null);
 		setVisible(true);
@@ -133,5 +133,14 @@ public class HomePage extends JFrame {
 
 	public JButton getDetailBtn() {
 		return detailBtn;
+	}
+	public JButton getTransferBtn(){
+		return transferBtn;
+	}
+	public JButton getNotificationBtn(){
+		return notificationBtn;
+	}
+	public void setBalanceLabel(String balance){
+		balanceLabel.setText(balance);
 	}
 }

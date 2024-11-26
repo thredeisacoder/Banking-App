@@ -17,12 +17,14 @@ public class Transaction {
     private LocalDate date;
     private String source;
     private String destination;
-    public Transaction(String id, Double money, LocalDate date, String source, String destination) {
+    private String bankName;
+    public Transaction(String id, Double money, LocalDate date, String source, String destination, String bankName) {
         this.id = id;
         this.money = money;
         this.date = date;
         this.source = source;
         this.destination = destination;
+        this.bankName = bankName;
     }
     public String getId() {
         return id;
@@ -42,6 +44,9 @@ public class Transaction {
     public String getDestination() {
         return destination;
     }
+    public String getBankName() {
+        return bankName;
+    }
 
     public static List<Transaction> getTransactionList(int user_id) {
         List<Transaction> transactionList = new ArrayList<>();
@@ -57,7 +62,8 @@ public class Transaction {
                 LocalDate date = resultSet.getDate("date").toLocalDate();
                 String source = resultSet.getString("source");
                 String destination = resultSet.getString("destination");
-                transactionList.add(new Transaction(id, money, date, source, destination));
+                String bankName = resultSet.getString("bankName");
+                transactionList.add(new Transaction(id, money, date, source, destination, bankName));
             }
         }
         catch (SQLException e){

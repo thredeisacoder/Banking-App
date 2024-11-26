@@ -13,11 +13,13 @@ public class Account {
     private String accno;
     private double balance;
     private int user_id;
-    public Account(String accno, double balance,int user_id) {
+    private String bankName;
+    public Account(String accno, double balance,int user_id, String bankName) {
         if(accno!=null) this.accno = accno;
         else this.accno= generateUniqueCode();
         if(balance!=0) this.balance =balance;
         else this.balance =0.0;
+        this.bankName=bankName;
         this.user_id=user_id;
     }
     public String getAccno() {
@@ -28,6 +30,9 @@ public class Account {
     }
     private void setBalance (double balance) {
         this.balance = balance;
+    }
+    public String getBankName() {
+        return bankName;
     }
 
     public int getUser_id() {
@@ -83,7 +88,9 @@ public class Account {
             if (resultSet.next()) {
                 String accno = resultSet.getString("accno");
                 double balance = resultSet.getDouble("balance");
-                return new Account(accno, balance, user_id);
+                resultSet.getInt("user_id");
+                String bankName = resultSet.getString("bankName");
+                return new Account(accno, balance, user_id, bankName);
             }
         } catch (Exception e) {
             System.out.println(e);
