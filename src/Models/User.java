@@ -81,6 +81,23 @@ public class User {
             return null;
         }
     }
+
+//    public static String getUsername(int user_id){
+//        try {
+//            Connection connection = ConnectDatabase.getConnection();
+//            String query = "select name from users where user_id = ?";
+//            PreparedStatement preparedStatement = connection.prepareStatement(query);
+//            preparedStatement.setInt(1, user_id);
+//            ResultSet resultSet = preparedStatement.executeQuery();
+//            if (resultSet.next()) {
+//                String name = resultSet.getString("name");
+//                return name;
+//            }
+//        } catch (Exception e) {
+//            System.out.println(e);
+//        }
+//        return null;
+//    }
     public static boolean exist(String phone){
         try {
             Connection connection = ConnectDatabase.getConnection();

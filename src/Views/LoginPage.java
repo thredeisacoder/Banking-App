@@ -38,7 +38,7 @@ public class LoginPage extends JFrame {
         closeButton.setBackground(Color.WHITE);
         closeButton.setFocusPainted(false);
         closeButton.addActionListener(( e) -> System.exit(0));
-        titleBar.add(closeButton, BorderLayout.EAST);
+//        titleBar.add(closeButton, BorderLayout.EAST);
 
         this.setSize(400, 700);
         this.setLocationRelativeTo(null);

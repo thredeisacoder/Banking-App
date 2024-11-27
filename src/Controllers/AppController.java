@@ -94,6 +94,13 @@ public class AppController {
     public void changeToRegisterPage(){
         registerPage = new RegisterPage();
         JButton submitBtn = registerPage.getSubmitBtn();
+
+        JComboBox<String> bankNameInput = registerPage.getBankNameInput();
+        ArrayList<String> bankNameLst = Bank.getBankList();
+        for (String bankName : bankNameLst ) {
+            bankNameInput.addItem(bankName);
+        }
+
         submitBtn.addActionListener(e -> hanleRegister(registerPage.getUserInput()));
         JButton turnBackBtn = registerPage.getTurnBackBtn();
         turnBackBtn.addActionListener(e->{
@@ -116,14 +123,32 @@ public class AppController {
         JTextField addressField = detailUserPage.getAddressField();
         addressField.setText(user.getAddress());
 
+        JButton saveBtn= detailUserPage.getSaveBtn();
         JButton editBtn = detailUserPage.getEditBtn();
-
-        JButton saveBtn = detailUserPage.getSaveBtn();
-
         JButton turnBackBtn= detailUserPage.getTurnBackBtn();
+
+        editBtn.addActionListener(e->{
+            saveBtn.setVisible(true);
+            editBtn.setVisible(false);
+            turnBackBtn.setVisible(false);
+            nameField.setEditable(true);
+            emailField.setEditable(true);
+            addressField.setEditable(true);
+        });
+
         turnBackBtn.addActionListener(e->{
             detailUserPage.dispose();
             changeToHomePage();
+        });
+        saveBtn.addActionListener(e->{
+            saveBtn.setVisible(false);
+            editBtn.setVisible(true);
+            turnBackBtn.setVisible(true);
+            nameField.setEditable(false);
+            emailField.setEditable(false);
+            addressField.setEditable(false);
+
+            JOptionPane dlg = new JOptionPane();
         });
 
         homePage.dispose();
@@ -145,9 +170,17 @@ public class AppController {
 //        destionationOwnerLabel.setText();
 
         JButton checkAccountNumberButton = transferPage.getCheckAccountNumberButton();
-//        checkAccountNumberButton.addActionListener(e->{
-//
-//        })
+        checkAccountNumberButton.addActionListener(e->{
+            System.out.println("clicked");
+            JTextField destinationInput = transferPage.getDestinationInput();
+            String accno = destinationInput.getText();
+            System.out.println(accno);
+//            if(accno.equals(account.getAccno())){
+//                return;
+//            }
+            String user_name = Account.getUserName(accno);
+            System.out.println(user_name+"ok");
+        });
 
         /**/
         JComboBox bankNameComboBox = transferPage.getBankNameComboBox();

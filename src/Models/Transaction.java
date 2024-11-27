@@ -21,7 +21,10 @@ public class Transaction {
     public Transaction(String id, Double money, LocalDate date, String source, String destination, String bankName) {
         this.id = id;
         this.money = money;
-        this.date = date;
+        if(this.date==null)date= LocalDate.now();
+        else{
+            this.date = date;
+        }
         this.source = source;
         this.destination = destination;
         this.bankName = bankName;

@@ -78,7 +78,6 @@ public class Account {
         return code;
     }
     public static Account getAccount(int user_id) {
-
         try {
             Connection connection = ConnectDatabase.getConnection();
             String query = "select * from accounts where user_id = ?";
@@ -98,6 +97,21 @@ public class Account {
         return null;
     }
 
+    public static String getUserName(String accno){
+        try {
+            Connection connection = ConnectDatabase.getConnection();
+            String query = "select * from users inner join accounts on users.id = accounts.user_id where accno =?";
+            java.sql.PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, accno);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                return resultSet.getString("name");
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return "";
+    }
     public static boolean addAccount(Account account){
         try{
             Connection connection = ConnectDatabase.getConnection();
