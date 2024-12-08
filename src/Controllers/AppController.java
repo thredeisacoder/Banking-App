@@ -411,7 +411,7 @@ public class AppController {
     }
     public boolean validateLogin(String phone, String password) {
         //validate phone and pass
-        return Constraints.validPhone(phone) && Constraints.validPassword(password);
+        return /*Constraints.validPhone(phone) &&*/ Constraints.validPassword(password);
     }
     public boolean validateRegister(Map<String,String> userInput){
         System.out.println(userInput);

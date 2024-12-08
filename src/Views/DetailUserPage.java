@@ -21,6 +21,7 @@ public class DetailUserPage extends JFrame {
     private JButton turnBackBtn;
 
     private JButton saveBtn;
+    private JButton changePasswordBtn;
 
 
     public DetailUserPage(){
@@ -81,16 +82,28 @@ public class DetailUserPage extends JFrame {
         addressField.setOpaque(false);
         addressField.setBorder(inputBorder);
 
+        Border btnBorder = BorderFactory.createCompoundBorder(dashBorder,BorderFactory.createEmptyBorder(10,10,10,10));
+
+
         editBtn = new JButton("Edit");
         editBtn.setFont(new Font("Tahoma",Font.BOLD,15));
         editBtn.setBackground(new Color(122, 122, 229));
+        editBtn.setBorder(btnBorder);
         saveBtn = new JButton("Save");
         saveBtn.setFont(new Font("Tahoma",Font.BOLD,15));
         saveBtn.setBackground(new Color(122, 122, 229));
+        saveBtn.setBorder(btnBorder);
         saveBtn.setVisible(false);
+
+        changePasswordBtn = new JButton("Change Password");
+        changePasswordBtn.setFont(new Font("Tahoma",Font.BOLD,15));
+        changePasswordBtn.setBackground(new Color(122, 122, 229));
+        changePasswordBtn.setBorder(btnBorder);
+        changePasswordBtn.setVisible(false);
         turnBackBtn= new JButton("Back");
         turnBackBtn.setBackground(new Color(122, 122, 229));
         turnBackBtn.setFont(new Font("Tahoma",Font.BOLD,15));
+        turnBackBtn.setBorder(btnBorder);
 
         JPanel inforPangel= new JPanel();
         inforPangel.setLayout(new GridLayout(8,2));
@@ -106,12 +119,13 @@ public class DetailUserPage extends JFrame {
         inforPangel.add(addressField);
 
         JPanel btnPanel = new JPanel();
-        btnPanel.setLayout(new GridLayout(1,3));
+        btnPanel.setLayout(new GridLayout(2,2));
         btnPanel.setBorder(BorderFactory.createEmptyBorder(80,20,80,20));
         btnPanel.setBackground(new Color(198, 198, 254));
         btnPanel.add(editBtn);
-        btnPanel.add(saveBtn);
         btnPanel.add(turnBackBtn);
+        btnPanel.add(saveBtn);
+        btnPanel.add(changePasswordBtn);
         add(imgPanel,BorderLayout.NORTH);
         add(inforPangel,BorderLayout.CENTER);
         add(btnPanel,BorderLayout.SOUTH);
@@ -143,5 +157,9 @@ public class DetailUserPage extends JFrame {
     }
     public JButton getTurnBackBtn(){
         return turnBackBtn;
+    }
+
+    public JButton getChangePasswordBtn() {
+        return changePasswordBtn;
     }
 }

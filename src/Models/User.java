@@ -122,4 +122,39 @@ public class User {
         }
     }
 
+    public static boolean updateUser(String name,String phone, String email, String address ){
+        try{
+            Connection connection = ConnectDatabase.getConnection();
+            String query= "update users set name=? , email = ? , address = ?  where phone = ? ;";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, email);
+            preparedStatement.setString(3, address);
+            preparedStatement.setString(4,phone);
+            preparedStatement.executeUpdate();
+            return true;
+        }
+        catch (SQLException e){
+            System.out.println(e);
+            return false;
+        }
+    }
+
+    public static boolean updatePassword(String phone,String newPassword){
+        try{
+            Connection connection = ConnectDatabase.getConnection();
+            String query= "update users set password=?  where phone = ? ;";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, newPassword);
+            preparedStatement.setString(2, phone);
+            preparedStatement.executeUpdate();
+            return true;
+        }
+        catch (SQLException e){
+            System.out.println(e);
+            return false;
+        }
+    }
+
+
 }
