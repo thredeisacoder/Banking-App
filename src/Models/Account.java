@@ -97,32 +97,97 @@ public class Account {
         return null;
     }
 
-    public static String getUserName(String accno){
-        try {
-            Connection connection = ConnectDatabase.getConnection();
-            String query = "select * from users inner join accounts on users.id = accounts.user_id where accno =?";
-            java.sql.PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, accno);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()){
-                return resultSet.getString("name");
-            }
-        } catch (Exception e) {
-            System.out.println(e);
+    public static String getUserName(String accno) {
+        if (accno == null || accno.trim().isEmpty()) {
+            return "";
         }
-        return "";
+
+        String userName = "";
+        try (Connection connection = ConnectDatabase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT * FROM users INNER JOIN accounts ON users.id = accounts.user_id WHERE accno = ?"
+             )) {
+            preparedStatement.setString(1, accno);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    userName = resultSet.getString("name");
+//                    System.out.println("User name: " + userName);
+                    if (userName == null || userName.trim().isEmpty()) {
+                        userName = "";
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error while retrieving username: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return userName;
     }
+
+    public static String getBankName(String accno) {
+        if (accno == null || accno.trim().isEmpty()) {
+            return "";
+        }
+        String bankName = "";
+        try (Connection connection = ConnectDatabase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT * FROM users INNER JOIN accounts ON users.id = accounts.user_id WHERE accno = ?"
+             )) {
+            preparedStatement.setString(1, accno);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    bankName = resultSet.getString("bankName");
+//                    System.out.println("Bank name: " + bankName);
+                    if (bankName == null || bankName.trim().isEmpty()) {
+                        bankName = "";
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error while retrieving username: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return bankName;
+    }
+
     public static boolean addAccount(Account account){
         try{
             Connection connection = ConnectDatabase.getConnection();
-            String query= "insert into accounts(accno, balance, user_id) values(?,?,?)";
+            String query= "insert into accounts(accno, balance, user_id,bankName) values(?,?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, account.getAccno());
             preparedStatement.setDouble(2, account.getBalance());
             preparedStatement.setInt(3, account.getUser_id());
+            preparedStatement.setString(4, account.getBankName());
             preparedStatement.executeUpdate();
             return true;
         } catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        }
+    }
+
+    public static boolean tranferMoney(String source, String destination, double money){
+        try {
+            Connection connection = ConnectDatabase.getConnection();
+//            System.out.println(source+" "+destination+" "+money);
+            String query1 = "update accounts set balance = balance - ? where accno = ?";
+            PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
+            preparedStatement1.setDouble(1, money);
+            preparedStatement1.setString(2, source);
+
+            String query2 = "update accounts set balance = balance + ? where accno = ?";
+            PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
+            preparedStatement2.setDouble(1, money);
+            preparedStatement2.setString(2, destination);
+            preparedStatement1.executeUpdate();
+            preparedStatement2.executeUpdate();
+            return true;
+        }catch (SQLException e) {
             System.out.println(e);
             return false;
         }
