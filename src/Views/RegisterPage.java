@@ -14,6 +14,7 @@ public class RegisterPage extends JFrame {
     private JButton turnBackBtn;
     private JTextField addressInput;
     private JPasswordField passwordInput;
+    private JComboBox<String> bankNameInput;
     private JTextField emailInput;
     private JTextField nameInput;
     private JTextField phoneInput;
@@ -32,14 +33,15 @@ public class RegisterPage extends JFrame {
         setSize(400, 700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setUndecorated(true);
+//        this.setUndecorated(true);
 
         JPanel headPanel= new JPanel();
         headPanel.setBackground(new Color(198, 198, 254));
         headPanel.setLayout(new BorderLayout());
         turnBackBtn= new JButton();
-        turnBackBtn.setBackground(new Color(198, 198, 254));
+        turnBackBtn.setBackground(new Color(122, 122, 229));
         turnBackBtn.setToolTipText("back to login");
+        turnBackBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         headPanel.add(turnBackBtn,BorderLayout.WEST);
         JPanel panel = new JPanel();
@@ -57,6 +59,13 @@ public class RegisterPage extends JFrame {
         addressInput = new JTextField();
         addressInput.setOpaque(false);
         addressInput.setBorder(inputBorder);
+
+        JLabel bankNameLabel = new JLabel("Choose bank:");
+        bankNameLabel.setForeground(new Color(122, 122, 229));
+        bankNameLabel.setFont(new Font("Tahoma",Font.BOLD,15));
+        bankNameInput = new JComboBox<>();
+        bankNameInput.setOpaque(false);
+        bankNameInput.setBorder(inputBorder);
 
 
         JLabel passwordLabel = new JLabel("Password:");
@@ -98,7 +107,8 @@ public class RegisterPage extends JFrame {
         submitBtn = new JButton("Register");
         submitBtn.setFont(new Font("Tahoma",Font.BOLD,20));
         submitBtn.setBackground(new Color(122, 122, 229));
-        submitBtn.setForeground(new Color(198, 198, 254));;
+        submitBtn.setForeground(new Color(198, 198, 254));
+        submitBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         try {
             BufferedImage myPicture = ImageIO.read(new File("./src/Resourses/img/back-arrow.png"));
             Image scaledImage=myPicture.getScaledInstance(20,20,Image.SCALE_SMOOTH);
@@ -112,6 +122,8 @@ public class RegisterPage extends JFrame {
         panel.add(nameInput);
         panel.add(phoneLabel);
         panel.add(phoneInput);
+        panel.add(bankNameLabel);
+        panel.add(bankNameInput);
         panel.add(emailLabel);
         panel.add(emailInput);
         panel.add(addressLabel);
@@ -137,10 +149,16 @@ public class RegisterPage extends JFrame {
     public JButton getTurnBackBtn(){
         return turnBackBtn;
     }
+
+    public JComboBox<String> getBankNameInput() {
+        return bankNameInput;
+    }
+
     public Map<String, String> getUserInput() {
         Map<String, String> userInput = new HashMap<>();
         userInput.put("name",nameInput.getText());
         userInput.put("address", addressInput.getText());
+        userInput.put("bankName",bankNameInput.getSelectedItem().toString());
         userInput.put("password", String.valueOf(passwordInput.getPassword()));
         userInput.put("email", emailInput.getText());
         userInput.put("phone", phoneInput.getText());
