@@ -79,68 +79,7 @@ public class Notification {
         }
     }
 
-    // lấy thông báo chưa đọc từ user
-    public static List<Notification> getUnreadNotifications(int user_id) {
-        List<Notification> notificationList = new ArrayList<>();
-        String query = "SELECT * FROM notifications WHERE user_id = ? AND is_read = false ORDER BY date DESC";
-        try (Connection conn = ConnectDatabase.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, user_id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    notificationList.add(createFromResultSet(rs));
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "không lấy được thông báo chương đọc", e);
-        }
-        return notificationList;
-    }
-
-    // lấy thông báo theo loại
-    public static List<Notification> getNotificationsByType(int user_id, String type) {
-        List<Notification> notificationList = new ArrayList<>();
-        String query = "SELECT * FROM notifications WHERE user_id = ? AND type =? ORDER BY date DESC";
-        try (Connection conn = ConnectDatabase.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, user_id);
-            stmt.setString(2, type);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    notificationList.add(createFromResultSet(rs));
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "không lấy được thông báo theo loai", e);
-        }
-        return notificationList;
-    }
-
-    // Đếm số thông báo chưa đọc 
-    public static int countUnReadNotifications(int user_id) {
-        String query = "SELECT COUNT(*) FROm notifications WHERE user_id= ? AND is_read = false";
-        try (Connection conn = ConnectDatabase.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, user_id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "không đếm được thông báo chưa đọc", e);
-        }
-        return 0;
-    }
-
-    // helper method để tạo đối tượng Notification từ ResultSet
-    private static Notification createFromResultSet(ResultSet rs) throws SQLException {
-        Notification notification = new Notification(rs.getString("message"), rs.getInt("user_id"),
-                rs.getString("type"));
-        notification.id = rs.getString("id");
-        notification.date = LocalDate.parse(rs.getString("date"));
-        return notification;
-    }
+ 
 
     public static boolean markAsDeleted(String date, String type, String message) {
         try {
@@ -256,28 +195,7 @@ public class Notification {
             return false;
         }
     }
-    // phương thức lấy thông báo
-    // public static List<Notification> getNotifications(int user_id) {
-    //     List<Notification> notificationList = new ArrayList<>();
-    //     String query = "SELECT * FROM notifications WHERE user_id=?";
-    //     try (Connection connection = ConnectDatabase.getConnection();
-    //             PreparedStatement preparedStatement = connection.prepareStatement(query);) {
-    //         preparedStatement.setInt(1, user_id);
-    //         try (ResultSet resultSet = preparedStatement.executeQuery()) {
-    //             while (resultSet.next()) {
-    //                 Notification notification = new Notification(resultSet.getString("message"),
-    //                         resultSet.getInt("user_id"));
-    //                 notification.id = resultSet.getString("id");
-    //                 notification.date = LocalDate.parse(resultSet.getString("date"));
-    //                 notificationList.add(notification);
-    //             }
-    //         }
-    //     } catch (SQLException e) {
-    //         LOGGER.log(Level.SEVERE, "không lấy được thông báo từ database", e);
-    //     }
-    //     return notificationList;
 
-    // }
     // phương thức ADD  notification vào trong database
     public static boolean addNotification(Transaction transaction) {
         String query = "INSERT INTO notifications (message, user_id, type, is_read, date, amount) VALUES (?, ?, ?, ?, ?, ?)";
@@ -310,7 +228,7 @@ public class Notification {
             stmt.setInt(2, senderUserId);
             stmt.setString(3, "transaction");
             stmt.setBoolean(4, false);
-            stmt.setString(5, transaction.getDate().toString());
+            stmt.setString(5, currentTime.toString());
             stmt.setDouble(6, -transaction.getMoney()); // Số tiền âm cho người gửi
             stmt.executeUpdate();
             
