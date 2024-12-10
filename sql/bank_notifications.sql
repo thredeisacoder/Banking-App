@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
 --
 -- Host: localhost    Database: bank
 -- ------------------------------------------------------
--- Server version	8.0.39
+-- Server version	8.0.40
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,28 +16,28 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `notifications`
+-- Table structure for table `accounts`
 --
 
-DROP TABLE IF EXISTS `notifications`;
+DROP TABLE IF EXISTS `accounts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `notifications` (
-  `id` int NOT NULL,
-  `date` datetime NOT NULL,
-  `message` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `user_id` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  PRIMARY KEY (`id`)
+CREATE TABLE `accounts` (
+  `accno` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `balance` double NOT NULL,
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`accno`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `notifications`
+-- Dumping data for table `accounts`
 --
 
-LOCK TABLES `notifications` WRITE;
-/*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
-/*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
+LOCK TABLES `accounts` WRITE;
+/*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
+INSERT INTO `accounts` VALUES ('111111111111',100000,1),('57199268',100000,1234567899),('93843138',0,1234567898);
+/*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -49,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-26 23:36:16
+-- Dump completed on 2024-11-25 23:27:35

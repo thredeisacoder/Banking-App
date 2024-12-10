@@ -12,6 +12,7 @@ import Views.DetailUserPage;
 import Views.HomePage;
 import Views.LoginPage;
 import Views.NotificationDetailPage;
+import Views.ReceiptPage;
 import Views.RegisterPage;
 import Views.ResetPassWordPage;
 import Views.TransferPage;
@@ -23,6 +24,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,6 +48,7 @@ public class AppController {
     AuthenPage authenPage;
     ResetPassWordPage resetPassWordPage;
     DetailUserPage detailUserPage;
+    ReceiptPage receiptPage;
 
     public AppController() {
         startApp();
@@ -475,48 +478,74 @@ public class AppController {
             changeToDetailPage();
         }
     }
-    public void changeToTransferPage(){
+
+    public void changeToTransferPage() {
         transferPage = new TransferPage();
         JButton returnButton = transferPage.getReturnButton();
-        returnButton.addActionListener(e->{
+        returnButton.addActionListener(e -> {
             transferPage.dispose();
             changeToHomePage();
         });
 
         /* Balance */
         JLabel balanceLabel = transferPage.getBalanceLabel();
-        balanceLabel.setText("Số dư: "+account.getBalance()+"$");
+        balanceLabel.setText("Số dư: " + account.getBalance() + "$");
 
         JLabel destionationOwnerLabel = transferPage.getDestionationOwnerLabel();
-//        destionationOwnerLabel.setText();
+        //        destionationOwnerLabel.setText();
 
         JButton checkAccountNumberButton = transferPage.getCheckAccountNumberButton();
-        checkAccountNumberButton.addActionListener(e->{
+        checkAccountNumberButton.addActionListener(e -> {
             System.out.println("clicked");
             JTextField destinationInput = transferPage.getDestinationInput();
             String accno = destinationInput.getText();
             System.out.println(accno);
-//            if(accno.equals(account.getAccno())){
-//                return;
-//            }
+            //            if(accno.equals(account.getAccno())){
+            //                return;
+            //            }
             String user_name = Account.getUserName(accno);
-            System.out.println(user_name+"ok");
+            System.out.println(user_name + "ok");
         });
 
         /**/
         JComboBox bankNameComboBox = transferPage.getBankNameComboBox();
         ArrayList<String> bankNameList = new ArrayList<>();
         bankNameList = Bank.getBankList();
-        for(String bankName:bankNameList){
+        for (String bankName : bankNameList) {
             bankNameComboBox.addItem(bankName);
         }
 
         /* Transfer button */
         JButton transferButton = transferPage.getTransferButton();
-        transferButton.addActionListener(e->{
+        transferButton.addActionListener(e -> {
             handleTransferMoney();
         });
-
+        /* Check button */
+        JButton checkButton = transferPage.getCheckAccountNumberButton();
+        checkButton.addActionListener(e -> {
+            handleCheckAccountNumber();
+        });
+    }
+    
+    public boolean handleCheckAccountNumber() {
+        JComboBox bankNameComboBox = transferPage.getBankNameComboBox();
+        JTextField destinationInput = transferPage.getDestinationInput();
+        String checkAccount = account.getUserName(destinationInput.getText());
+        String checkBankName = account.getBankName(destinationInput.getText());
+        if (!Constraints.validateCheckNumber(Map.of("accno", destinationInput.getText()))) {
+            JOptionPane.showMessageDialog(transferPage, "Số tài khoản không hợp lệ");
+            return false;
+        }
+        if (checkAccount.isEmpty() || checkBankName.isEmpty()
+                || !checkBankName.equals((String) bankNameComboBox.getSelectedItem())) {
+            JOptionPane.showMessageDialog(transferPage,
+                    "Không tìm thấy số tài khoản. Vui lòng kiểm tra lại ngân hàng hoặc số ngân hàng!");
+            return false;
+        } else {
+            JLabel destionationOwnerLabel = transferPage.getDestionationOwnerLabel();
+            destionationOwnerLabel.setText("Recipient name: " + checkAccount);
+            return true;
+        }
     }
     //create otp contains 6 numbers
     public String createOtp(){
@@ -655,14 +684,29 @@ public class AppController {
         }
     }
 
-    public void logout(){
+    public void logout() {
         //reset all information about user
-        user=null;
-        account=null;
+        user = null;
+        account = null;
         transactionList.clear();
         notificationList.clear();
         homePage.dispose();
         changeToLoginPage();
+    }
+    public void changeToReceiptPage(){
+        receiptPage = new ReceiptPage();
+        /* Return Button */
+        JButton returnButton = receiptPage.getReturnButton();
+        returnButton.addActionListener(e->{
+            receiptPage.dispose();
+            changeToHomePage();
+        });
+        /* Countiune Button */
+        JButton continueButton = receiptPage.getContinueButton();
+        continueButton.addActionListener(e->{
+            receiptPage.dispose();
+            changeToTransferPage();
+        });
     }
     public void handleTransferMoney(){
         /* Destination Number */
@@ -677,21 +721,30 @@ public class AppController {
         /* Combobox Bank Names */
         JComboBox bankNameComboBox = transferPage.getBankNameComboBox();
 
-        Map<String, String> input = new HashMap<>();
-        input.put("source", account.getAccno());
-        input.put("destination", destinationInput.getText());
-        input.put("money", getMoneyInput.getText());
-        input.put("contents", getContentsInput.getText());
-        input.put("bankName", (String)bankNameComboBox.getSelectedItem());
+     try {
+            double moneyAmount = Double.parseDouble(getMoneyInput.getText());
+            if (!Constraints.validateHandleMoney(Map.of("money", getMoneyInput.getText())) || moneyAmount > account.getBalance()) {
+                JOptionPane.showMessageDialog(transferPage, "Not enough money!");
+                return;
+            }
 
-        if(!validateTransfer(input)){
-            JOptionPane.showMessageDialog(transferPage, "Invalid Input!!!");
-            return;
+            LocalDate now = LocalDate.now();
+            Transaction input = new Transaction(-1, moneyAmount, now, account.getAccno(), destinationInput.getText(), (String) bankNameComboBox.getSelectedItem(), getContentsInput.getText()
+            );
+            if (Transaction.addTransaction(input)
+                    && Account.tranferMoney(account.getAccno(), destinationInput.getText(), moneyAmount)) {
+                Notification.addNotification(input);
+                account = Account.getAccount(user.getId());
+                JOptionPane.showMessageDialog(transferPage, "Chuyển tiền thành công");
+                transferPage.dispose();
+                changeToReceiptPage();
+            } else {
+                JOptionPane.showMessageDialog(transferPage, "Chuyển tiền thất bại!");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(transferPage, "Sai định dạng số tiền");
         }
-        if(!validateHandleMoney(input)){
-            JOptionPane.showMessageDialog(transferPage, "Not enough money!!!");
-            return;
-        }
+      
 
     }
     public boolean validateLogin(String phone, String password) {

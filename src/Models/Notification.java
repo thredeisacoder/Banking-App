@@ -29,6 +29,7 @@ public class Notification {
     private boolean isRead;
     private String type;
     private double amount;
+
     // ví dụ như:"transaction, security,system"
     public Notification(String message, int user_id) {
         if (message == null || message.trim().isEmpty()) {
@@ -41,7 +42,10 @@ public class Notification {
         this.message = message;
         this.user_id = user_id;
     }
-    public Notification(){}
+
+    public Notification() {
+    }
+
     public Notification(String message, int user_id, String type, boolean status, LocalDateTime date, double amount) {
         if (message == null || message.trim().isEmpty()) {
             throw new IllegalArgumentException("Thông điệp không được để trống");
@@ -70,7 +74,7 @@ public class Notification {
             }
             return false;
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "kh��ng đánh dấu thông báo đã đọc được", e);
+            LOGGER.log(Level.SEVERE, "khng đánh dấu thông báo đã đọc được", e);
             return false;
         }
     }
@@ -95,19 +99,19 @@ public class Notification {
 
     // lấy thông báo theo loại
     public static List<Notification> getNotificationsByType(int user_id, String type) {
-        List<Notification> notificationList  = new ArrayList<>();
-        String query ="SELECT * FROM notifications WHERE user_id = ? AND type =? ORDER BY date DESC";
-        try(Connection conn = ConnectDatabase.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(query)){
-            stmt.setInt(1,user_id);
-            stmt.setString(2,type);
-            try(ResultSet rs = stmt.executeQuery()){
-                while(rs.next()){
+        List<Notification> notificationList = new ArrayList<>();
+        String query = "SELECT * FROM notifications WHERE user_id = ? AND type =? ORDER BY date DESC";
+        try (Connection conn = ConnectDatabase.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, user_id);
+            stmt.setString(2, type);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
                     notificationList.add(createFromResultSet(rs));
                 }
             }
-        }catch(SQLException e){
-            LOGGER.log(Level.SEVERE,"không lấy được thông báo theo loai",e);
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "không lấy được thông báo theo loai", e);
         }
         return notificationList;
     }
@@ -164,6 +168,7 @@ public class Notification {
             return false;
         }
     }
+
     // lấy tất cả thông báo
     public static List<Notification> getNotificationList(int user_id) {
         List<Notification> notificationList = new ArrayList<>();
@@ -181,7 +186,7 @@ public class Notification {
                 String id = resultSet.getString("id");
                 boolean status = resultSet.getBoolean("is_read");
                 double amount = resultSet.getDouble("amount");
-                notificationList.add(new Notification(message, user_id,type,status,date,amount));
+                notificationList.add(new Notification(message, user_id, type, status, date, amount));
             }
         } catch (SQLException e) {
             System.out.println(e);
@@ -225,8 +230,7 @@ public class Notification {
             PreparedStatement stmt = ConnectDatabase.getConnection().prepareStatement(query);
 
             // Chuyển đổi trạng thái thành "true" nếu là "Đã đọc", ngược lại là "false"
-           
-            
+
             stmt.setBoolean(1, newStatus.equals("Đã đọc"));
             System.out.println(newStatus.equals("Đã đọc"));
             // stmt.setString(2, date);
@@ -243,7 +247,7 @@ public class Notification {
 
             int rowsAffected = stmt.executeUpdate();
             System.out.println("Rows affected: " + rowsAffected);
-            
+
             return rowsAffected > 0;
 
         } catch (SQLException e) {
@@ -274,13 +278,65 @@ public class Notification {
     //     return notificationList;
 
     // }
+    // phương thức ADD  notification vào trong database
+    public static boolean addNotification(Transaction transaction) {
+        String query = "INSERT INTO notifications (message, user_id, type, is_read, date, amount) VALUES (?, ?, ?, ?, ?, ?)";
+        
+        try (Connection conn = ConnectDatabase.getConnection();) {
+                // Truy vấn để lấy user_id từ source account
+            String getUserQuery = "SELECT user_id FROM accounts WHERE accno = ?";
+            PreparedStatement getUserStmt = conn.prepareStatement(getUserQuery);
+
+            // Lấy user_id của người gửi
+            getUserStmt.setString(1, transaction.getSource());
+            ResultSet senderRs = getUserStmt.executeQuery();
+            int senderUserId = 0;
+            if (senderRs.next()) {
+                senderUserId = senderRs.getInt("user_id");
+            }
+
+            // Lấy user_id của người nhận
+            getUserStmt.setString(1, transaction.getDestination());
+            ResultSet receiverRs = getUserStmt.executeQuery();
+            int receiverUserId = 0;
+            if (receiverRs.next()) {
+                receiverUserId = receiverRs.getInt("user_id");
+            }
+            PreparedStatement stmt = conn.prepareStatement(query);
+            LocalDateTime currentTime = LocalDateTime.now();
+            
+            // Tạo thông báo cho người gửi (sender)
+            stmt.setString(1, "Chuyển tiền đến tài khoản " + transaction.getContents());
+            stmt.setInt(2, senderUserId);
+            stmt.setString(3, "transaction");
+            stmt.setBoolean(4, false);
+            stmt.setString(5, transaction.getDate().toString());
+            stmt.setDouble(6, -transaction.getMoney()); // Số tiền âm cho người gửi
+            stmt.executeUpdate();
+            
+            // Tạo thông báo cho người nhận (receiver)
+            stmt.setString(1, "Nhận tiền từ tài khoản " + transaction.getContents());
+            stmt.setInt(2, receiverUserId);
+            stmt.setString(3, "transaction");
+            stmt.setBoolean(4, false);
+            stmt.setString(5, currentTime.toString());
+            stmt.setDouble(6, transaction.getMoney()); // Số tiền dương cho người nhận
+            stmt.executeUpdate();
+            
+            return true;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Không thể thêm thông báo giao dịch", e);
+            return false;
+        }
+    }
     public boolean isRead() {
         return isRead;
     }
 
     public String getType() {
         return type;
-}
+    }
+
     public LocalDateTime getDate() {
         return date;
     }
@@ -292,6 +348,7 @@ public class Notification {
     public String getId() {
         return id;
     }
+
     public double getAmount() {
         return amount;
     }
