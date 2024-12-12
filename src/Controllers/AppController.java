@@ -479,71 +479,66 @@ public class AppController {
         }
     }
 
-    public void changeToTransferPage() {
+    public void changeToTransferPage(){
         transferPage = new TransferPage();
+
+        /* Return Button */
         JButton returnButton = transferPage.getReturnButton();
-        returnButton.addActionListener(e -> {
+        returnButton.addActionListener(e->{
             transferPage.dispose();
             changeToHomePage();
         });
 
         /* Balance */
         JLabel balanceLabel = transferPage.getBalanceLabel();
-        balanceLabel.setText("Số dư: " + account.getBalance() + "$");
+        balanceLabel.setText("Balance: "+account.getBalance()+"$");
 
-        JLabel destionationOwnerLabel = transferPage.getDestionationOwnerLabel();
-        //        destionationOwnerLabel.setText();
 
         JButton checkAccountNumberButton = transferPage.getCheckAccountNumberButton();
-        checkAccountNumberButton.addActionListener(e -> {
-            System.out.println("clicked");
-            JTextField destinationInput = transferPage.getDestinationInput();
-            String accno = destinationInput.getText();
-            System.out.println(accno);
-            //            if(accno.equals(account.getAccno())){
-            //                return;
-            //            }
-            String user_name = Account.getUserName(accno);
-            System.out.println(user_name + "ok");
+        checkAccountNumberButton.addActionListener(e->{
+
         });
 
-        /**/
+        /* Choosing bank names */
         JComboBox bankNameComboBox = transferPage.getBankNameComboBox();
         ArrayList<String> bankNameList = new ArrayList<>();
         bankNameList = Bank.getBankList();
-        for (String bankName : bankNameList) {
+        for(String bankName:bankNameList){
             bankNameComboBox.addItem(bankName);
         }
 
         /* Transfer button */
         JButton transferButton = transferPage.getTransferButton();
-        transferButton.addActionListener(e -> {
+        transferButton.addActionListener(e->{
             handleTransferMoney();
+            handleReceiptPage(receiptPage);
+            transferPage.dispose();
         });
+
         /* Check button */
         JButton checkButton = transferPage.getCheckAccountNumberButton();
-        checkButton.addActionListener(e -> {
+        checkButton.addActionListener(e->{
             handleCheckAccountNumber();
         });
     }
-    
-    public boolean handleCheckAccountNumber() {
+
+    public boolean handleCheckAccountNumber(){
         JComboBox bankNameComboBox = transferPage.getBankNameComboBox();
         JTextField destinationInput = transferPage.getDestinationInput();
         String checkAccount = account.getUserName(destinationInput.getText());
         String checkBankName = account.getBankName(destinationInput.getText());
+
         if (!Constraints.validateCheckNumber(Map.of("accno", destinationInput.getText()))) {
             JOptionPane.showMessageDialog(transferPage, "Số tài khoản không hợp lệ");
             return false;
         }
-        if (checkAccount.isEmpty() || checkBankName.isEmpty()
-                || !checkBankName.equals((String) bankNameComboBox.getSelectedItem())) {
-            JOptionPane.showMessageDialog(transferPage,
-                    "Không tìm thấy số tài khoản. Vui lòng kiểm tra lại ngân hàng hoặc số ngân hàng!");
+        if (checkAccount.isEmpty() || checkBankName.isEmpty() || !checkBankName.equals((String)bankNameComboBox.getSelectedItem())) {
+            JOptionPane.showMessageDialog(transferPage, "Không tìm thấy số tài khoản. Vui lòng kiểm tra lại ngân hàng hoặc số ngân hàng!");
             return false;
-        } else {
+        }
+        else{
             JLabel destionationOwnerLabel = transferPage.getDestionationOwnerLabel();
-            destionationOwnerLabel.setText("Recipient name: " + checkAccount);
+            destionationOwnerLabel.setText("Recipient name: "+checkAccount);
             return true;
         }
     }
@@ -721,7 +716,9 @@ public class AppController {
         /* Combobox Bank Names */
         JComboBox bankNameComboBox = transferPage.getBankNameComboBox();
 
-     try {
+        Map<String, String> userInput = Map.of("money", getMoneyInput.getText(), "contents", getContentsInput.getText(), "bankName", (String)bankNameComboBox.getSelectedItem());
+
+        try {
             double moneyAmount = Double.parseDouble(getMoneyInput.getText());
             if (!Constraints.validateHandleMoney(Map.of("money", getMoneyInput.getText())) || moneyAmount > account.getBalance()) {
                 JOptionPane.showMessageDialog(transferPage, "Not enough money!");
@@ -731,11 +728,11 @@ public class AppController {
             LocalDate now = LocalDate.now();
             Transaction input = new Transaction(-1, moneyAmount, now, account.getAccno(), destinationInput.getText(), (String) bankNameComboBox.getSelectedItem(), getContentsInput.getText()
             );
-            if (Transaction.addTransaction(input)
-                    && Account.tranferMoney(account.getAccno(), destinationInput.getText(), moneyAmount)) {
-                Notification.addNotification(input);
+
+            if (Transaction.addTransaction(input) && Account.tranferMoney(account.getAccno(), destinationInput.getText(), moneyAmount)) {
                 account = Account.getAccount(user.getId());
                 JOptionPane.showMessageDialog(transferPage, "Chuyển tiền thành công");
+                Notification.addNotification(input);
                 transferPage.dispose();
                 changeToReceiptPage();
             } else {
@@ -744,8 +741,6 @@ public class AppController {
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(transferPage, "Sai định dạng số tiền");
         }
-      
-
     }
     public boolean validateLogin(String phone, String password) {
         //validate phone and pass
@@ -762,15 +757,28 @@ public class AppController {
                 && Constraints.validEmail(userInput.get("email"))
         );
     }
-    public boolean validateTransfer(Map<String, String> userInput){
-        if(userInput.get("money").equals("") || userInput.get("contents").equals("") || userInput.get("bankName").equals("")) return false;{
-            return true;
-        }
-    }
-    public boolean validateHandleMoney(Map<String, String> userInput){
-        double money = Double.parseDouble(userInput.get("money"));
-        if(money > account.getBalance()) return false;
-        return true;
+    public void handleReceiptPage(ReceiptPage receiptPage) {
+        String moneyTransferred = transferPage.getMoneyInput().getText();
+        String sourceName = account.getUserName(account.getAccno());
+        String sourceAccNumber = account.getAccno();
+        String destinationName = account.getUserName(transferPage.getDestinationInput().getText());
+        String destinationAccNumber = transferPage.getDestinationInput().getText();
+        String destinationBankName = account.getBankName(transferPage.getDestinationInput().getText());
+        String balance = String.format("%,.2f", account.getBalance());
+        String contents = transferPage.getContentsInput().getText();
+        String transactionId = destinationBankName + "0109928211" + Transaction.getTransactionId(sourceAccNumber, destinationAccNumber);
+        String transactionDate = Transaction.getTransactionDate(sourceAccNumber, destinationAccNumber);
+
+        receiptPage.getMoneyTransferredLabel().setText(moneyTransferred);
+        receiptPage.getSourceNameLabel().setText(sourceName);
+        receiptPage.getSourceOwnerLabel().setText(sourceAccNumber);
+        receiptPage.getDestinationNameLabel().setText(destinationName);
+        receiptPage.getDestinationAccountLabel().setText(destinationAccNumber);
+        receiptPage.getDestinationBankLabel().setText(destinationBankName);
+        receiptPage.getBalanceLabel().setText("Post-transaction balance: " + balance);
+        receiptPage.getDateLabel().setText("Transaction time: " + transactionDate);
+        receiptPage.getIdLabel().setText("Transaction code: " + transactionId);
+        receiptPage.getContentsLabel().setText("Description: " + contents);
     }
 }
 

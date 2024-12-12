@@ -1,6 +1,7 @@
 package Views;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 public class TransferPage extends JFrame {
@@ -14,9 +15,10 @@ public class TransferPage extends JFrame {
     private JComboBox bankNameComboBox;
     private JButton returnButton;
 
-    private static final Color BACKGROUND_COLOR = new Color(39, 18, 60);
-    private static final Color FOREGROUND_COLOR = new Color(187, 134, 252);
+    private static final Color BACKGROUND_COLOR = new Color(198, 198, 254);
+    private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
     private static final Font DEFAULT_FONT = new Font("Tahoma", Font.PLAIN, 16);
+    private static final Color BUTTON_BACKGROUND_COLOR = new Color(122, 122, 229);
 
     public TransferPage() {
         this.setTitle("Transfer");
@@ -45,6 +47,7 @@ public class TransferPage extends JFrame {
 
         transferButton = new JButton("Transfer");
         styleButton(transferButton);
+        transferButton.setFont(new Font("Arial", Font.BOLD, 20));
 
         destinationInput = styleTextField(new JTextField());
         moneyInput = styleTextField(new JTextField());
@@ -63,14 +66,14 @@ public class TransferPage extends JFrame {
         formPanel.setLayout(new GridLayout(12, 1));
 
         JPanel checkPanel = new JPanel();
-        checkPanel.setBackground(BACKGROUND_COLOR);
+        checkPanel.setBackground(BUTTON_BACKGROUND_COLOR);
         checkPanel.setLayout(new BorderLayout());
         checkPanel.add(destinationInput, BorderLayout.CENTER);
         checkPanel.add(checkAccountNumberButton, BorderLayout.EAST);
 
         JPanel titlePanel = new JPanel();
-        titlePanel.setBackground(BACKGROUND_COLOR);
-        JLabel titleLabel = new JLabel("Chi Tiết Giao Dịch", JLabel.CENTER);
+        titlePanel.setBackground(BUTTON_BACKGROUND_COLOR);
+        JLabel titleLabel = new JLabel("Transfer Money", JLabel.CENTER);
         titleLabel.setForeground(FOREGROUND_COLOR);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16).deriveFont(Font.BOLD, 24f * Toolkit.getDefaultToolkit().getScreenResolution() / 72f));
         titlePanel.setLayout(new BorderLayout());
@@ -95,11 +98,14 @@ public class TransferPage extends JFrame {
     }
 
     private void styleButton(JButton button) {
+        Border dashBorder = BorderFactory.createDashedBorder(Color.BLACK,1,5,2,false);
+        Border buttonBorder = BorderFactory.createCompoundBorder(dashBorder,BorderFactory.createEmptyBorder(10,10,10,10));
         button.setForeground(FOREGROUND_COLOR);
-        button.setBackground(BACKGROUND_COLOR);
-        button.setBorderPainted(false);
+        button.setBackground(BUTTON_BACKGROUND_COLOR);
+        button.setBorderPainted(true);
         button.setFocusPainted(false);
         button.setFont(DEFAULT_FONT);
+        button.setBorder(buttonBorder);
     }
 
     private JLabel styleLabel(JLabel label) {
@@ -109,10 +115,14 @@ public class TransferPage extends JFrame {
     }
 
     private JTextField styleTextField(JTextField textField) {
+        Border dashBorder = BorderFactory.createDashedBorder(Color.BLACK,1,5,2,false);
+        Border emptyBorder= BorderFactory.createEmptyBorder(5,5,5,5);
+        Border textFieldBorder = BorderFactory.createCompoundBorder(dashBorder,emptyBorder);
         textField.setBackground(BACKGROUND_COLOR);
         textField.setForeground(FOREGROUND_COLOR);
         textField.setCaretColor(FOREGROUND_COLOR);
         textField.setFont(DEFAULT_FONT);
+        textField.setBorder(textFieldBorder);
         return textField;
     }
 

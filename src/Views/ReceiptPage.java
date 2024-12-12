@@ -1,6 +1,7 @@
 package Views;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 public class ReceiptPage extends JFrame {
@@ -20,10 +21,11 @@ public class ReceiptPage extends JFrame {
     private JLabel idLabel;
     private JLabel contentsLabel;
 
-    private static final Color BACKGROUND_COLOR = new Color(39, 18, 60);
-    private static final Color FOREGROUND_COLOR = new Color(187, 134, 252);
+    private static final Color BACKGROUND_COLOR = new Color(198, 198, 254);
+    private static final Color FOREGROUND_COLOR = new Color(0, 0, 0);
     private static final Font DEFAULT_FONT = new Font("Arial", Font.PLAIN, 16);
     private static final Font TITLE_FONT = new Font("Arial", Font.BOLD, 18);
+    private static final Color BUTTON_BACKGROUND_COLOR = new Color(122, 122, 229);
 
     public ReceiptPage() {
         this.setTitle("Transaction Details");
@@ -34,7 +36,7 @@ public class ReceiptPage extends JFrame {
         this.setLayout(new BorderLayout());
 
         JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.setBackground(BACKGROUND_COLOR);
+        titlePanel.setBackground(BUTTON_BACKGROUND_COLOR);
 
         /* Title */
         JLabel titleLabel = new JLabel("Transaction Details", JLabel.CENTER);
@@ -42,7 +44,7 @@ public class ReceiptPage extends JFrame {
         titleLabel.setFont(new Font("Tahoma", Font.BOLD, 24).deriveFont(Font.BOLD, 24f * Toolkit.getDefaultToolkit().getScreenResolution() / 72f));
         titlePanel.add(titleLabel, BorderLayout.CENTER);
 
-        returnButton = createStyledButton("←", new Font("Tahoma", Font.BOLD, 20));
+        returnButton = StyledButton("←", new Font("Tahoma", Font.BOLD, 20));
         titlePanel.add(returnButton, BorderLayout.WEST);
         add(titlePanel, BorderLayout.NORTH);
 
@@ -54,19 +56,19 @@ public class ReceiptPage extends JFrame {
         moneyTransferredLabel.setForeground(FOREGROUND_COLOR);
         moneyTransferredLabel.setFont(DEFAULT_FONT.deriveFont(Font.PLAIN, 36));
 
-        sourceLabel = createStyledLabel("From account: ", DEFAULT_FONT);
-        sourceNameLabel = createStyledLabel("", TITLE_FONT);
-        sourceOwnerLabel = createStyledLabel("", TITLE_FONT);
+        sourceLabel = StyledLabel("From account: ", DEFAULT_FONT);
+        sourceNameLabel = StyledLabel("", TITLE_FONT);
+        sourceOwnerLabel = StyledLabel("", TITLE_FONT);
 
-        destinationLabel = createStyledLabel("To account: ", DEFAULT_FONT);
-        destinationNameLabel = createStyledLabel("", TITLE_FONT);
-        destinationAccountLabel = createStyledLabel("", TITLE_FONT);
-        destinationBankLabel = createStyledLabel("", TITLE_FONT);
+        destinationLabel = StyledLabel("To account: ", DEFAULT_FONT);
+        destinationNameLabel = StyledLabel("", TITLE_FONT);
+        destinationAccountLabel = StyledLabel("", TITLE_FONT);
+        destinationBankLabel = StyledLabel("", TITLE_FONT);
 
-        balanceLabel = createStyledLabel("Post-transaction balance: ", DEFAULT_FONT);
-        dateLabel = createStyledLabel("Transaction time: ", DEFAULT_FONT);
-        idLabel = createStyledLabel("Transaction code: ", DEFAULT_FONT);
-        contentsLabel = createStyledLabel("Description: ", DEFAULT_FONT);
+        balanceLabel = StyledLabel("Post-transaction balance: ", DEFAULT_FONT);
+        dateLabel = StyledLabel("Transaction time: ", DEFAULT_FONT);
+        idLabel = StyledLabel("Transaction code: ", DEFAULT_FONT);
+        contentsLabel = StyledLabel("Description: ", DEFAULT_FONT);
 
         /* Panel */
         JPanel formPanel = new JPanel();
@@ -90,7 +92,7 @@ public class ReceiptPage extends JFrame {
         add(formPanel, BorderLayout.CENTER);
 
         /* Buttons */
-        continueButton = createStyledButton("Continue transfer", DEFAULT_FONT);
+        continueButton = StyledButton("Continue transfer", DEFAULT_FONT);
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(BACKGROUND_COLOR);
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -101,17 +103,20 @@ public class ReceiptPage extends JFrame {
         setVisible(true);
     }
 
-    private JButton createStyledButton(String text, Font font) {
+    private JButton StyledButton(String text, Font font) {
+        Border dashBorder = BorderFactory.createDashedBorder(Color.BLACK,1,5,2,false);
+        Border buttonBorder = BorderFactory.createCompoundBorder(dashBorder,BorderFactory.createEmptyBorder(10,10,10,10));
         JButton button = new JButton(text);
         button.setForeground(FOREGROUND_COLOR);
-        button.setBackground(BACKGROUND_COLOR);
-        button.setBorderPainted(false);
+        button.setBackground(BUTTON_BACKGROUND_COLOR);
+        button.setBorderPainted(true);
         button.setFocusPainted(false);
         button.setFont(font);
+        button.setBorder(buttonBorder);
         return button;
     }
 
-    private JLabel createStyledLabel(String text, Font font) {
+    private JLabel StyledLabel(String text, Font font) {
         JLabel label = new JLabel(text);
         label.setForeground(FOREGROUND_COLOR);
         label.setFont(font);
