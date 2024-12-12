@@ -81,7 +81,7 @@ public class notificationPage extends JFrame {
 		// Điều chỉnh userInfoPanel
 		userInfoPanel = new JPanel(new GridBagLayout());
 		userInfoPanel.setBorder(new EmptyBorder(10, 15, 10, 15));
-		userInfoPanel.setBackground(new Color(240, 248, 255)); // Light blue background
+		userInfoPanel.setBackground(new Color(204, 204, 255)); // Light purple background
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(2, 2, 2, 10); // Small padding between components
@@ -157,12 +157,16 @@ public class notificationPage extends JFrame {
 		creditNotificationsButton.setPreferredSize(buttonSize);
 
 		// Custom button style
-		Color buttonColor = new Color(51, 122, 183); // Bootstrap primary blue
+		Color primaryColor = new Color(153, 153, 255); // Purple color for buttons
 		Color textColor = Color.WHITE;
 		
-		styleButton(allNotificationsButton, buttonColor, textColor);
-		styleButton(debitNotificationsButton, buttonColor, textColor);
-		styleButton(creditNotificationsButton, buttonColor, textColor);
+		// styleButton(allNotificationsButton, primaryColor, textColor);
+		// styleButton(debitNotificationsButton, primaryColor, textColor);
+		// styleButton(creditNotificationsButton, primaryColor, textColor);
+		// styleButton(backButton, primaryColor, textColor);
+		// styleButton(refreshButton, primaryColor, textColor);
+		// styleButton(markReadButton, primaryColor, textColor);
+		// styleButton(deleteButton, primaryColor, textColor);
 
 		filterPanel.add(allNotificationsButton);
 		filterPanel.add(debitNotificationsButton);
@@ -224,7 +228,8 @@ public class notificationPage extends JFrame {
 		// Style cho bảng
 		notificationTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		notificationTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
-		notificationTable.getTableHeader().setBackground(new Color(240, 240, 240));
+		notificationTable.getTableHeader().setBackground(new Color(153, 153, 255));
+		notificationTable.getTableHeader().setForeground(Color.WHITE);
 		notificationTable.setRowHeight(35);
 		notificationTable.setShowGrid(true);
 		notificationTable.setGridColor(new Color(230, 230, 230));
@@ -233,9 +238,15 @@ public class notificationPage extends JFrame {
 		Color dangerColor = new Color(217, 83, 79); // Bootstrap danger red
 		Color successColor = new Color(92, 184, 92); // Bootstrap success green
 		Color infoColor = new Color(91, 192, 222); // Bootstrap info blue
-		
-		styleButton(backButton, buttonColor, textColor);
-		styleButton(refreshButton, infoColor, textColor);
+		styleButton(allNotificationsButton, primaryColor, textColor);
+		styleButton(debitNotificationsButton, primaryColor, textColor);
+		styleButton(creditNotificationsButton, primaryColor, textColor);
+		styleButton(backButton, primaryColor, textColor);
+		styleButton(refreshButton, primaryColor, textColor);
+		styleButton(markReadButton, primaryColor, textColor);
+		styleButton(deleteButton, primaryColor, textColor);
+		styleButton(backButton, primaryColor, textColor);
+		styleButton(refreshButton, primaryColor, textColor);
 		styleButton(markReadButton, successColor, textColor);
 		styleButton(deleteButton, dangerColor, textColor);
 
@@ -244,6 +255,9 @@ public class notificationPage extends JFrame {
 		addPanelShadow(filterPanel);
 		addPanelShadow(scrollPane);
 		addPanelShadow(controlPanel);
+
+		// Thay đổi màu nền chính của contentPane
+		contentPane.setBackground(new Color(230, 230, 255)); // Very light purple
 	}
 
 	// Helper method để style các buttons
@@ -269,7 +283,7 @@ public class notificationPage extends JFrame {
 	// Helper method để tạo màu tối hơn cho hover effect
 	private Color darken(Color color) {
 		float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-		return Color.getHSBColor(hsb[0], hsb[1], Math.max(0, hsb[2] - 0.1f));
+		return Color.getHSBColor(hsb[0], hsb[1], Math.max(0, hsb[2] - 0.05f));
 	}
 
 	// Helper method để thêm shadow border cho panels

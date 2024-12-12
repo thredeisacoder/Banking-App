@@ -63,11 +63,19 @@ public class Notification {
 
     // đánh giấu thông báo đã đọc
     public boolean markAsRead() {
+        // tôi tạo 1 biến query để sử dụng database
         String query = "UPDATE  notificaction SET is_read =true WHERE id = ?";
-        try (Connection conn = ConnectDatabase.getConnection();
+        // dùng try cacthc đề bọc lại khi có lỗi sẽ trả về 1 lỗi liên quan đến sql
+        try (
+            // tạo 1 connection để kết nối database
+                Connection conn = ConnectDatabase.getConnection();
+            // tạo 1 preparedstatement để thực thi câu lệnh sql hạn chế việc bị sql injection 
                 PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, this.id);
-            int result = stmt.executeUpdate();
+                    // set id cho câu lệnh sql
+                    stmt.setString(1, this.id);
+                    // thực thi câu lệnh sql
+                    int result = stmt.executeUpdate();
+            // nếu kết quả lớn hơn 0 thì thông báo được đánh dấu đã đọc.
             if (result > 0) {
                 this.isRead = true;
                 return true;
@@ -85,10 +93,12 @@ public class Notification {
         try {
             // In ra định dạng chính xác của date từ database
             String checkQuery = "SELECT date FROM notifications WHERE type = ? AND message = ?";
+            // tạo 1 preparedstatement đề thực thi câu lệnh sql và câu viết ngắn gọn không cần đến collection như hàm markAsRead
             PreparedStatement checkStmt = ConnectDatabase.getConnection().prepareStatement(checkQuery);
             checkStmt.setString(1, type);
             checkStmt.setString(2, message);
             ResultSet rs = checkStmt.executeQuery();
+            // tạo 1 fommater để định dạng ngày tháng năm , giờ phút giây
             DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
             DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -250,7 +260,6 @@ public class Notification {
     public boolean isRead() {
         return isRead;
     }
-
     public String getType() {
         return type;
     }
